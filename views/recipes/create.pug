@@ -7,9 +7,11 @@ html(lang="en")
         title Document
     body 
         h1 Add Recipe 
-        form(action="/backoffice/add-recipe", method="POST")
+        form(action="/backoffice/add-recipe", method="POST", enctype="multipart/form-data")
             label(for="name") Name
             input(type="text", name="name")  
             label(for="procedure") Procedure
             textarea(name="procedure", cols="30", rows="10")
+            label(for="photo") Photo
+            input(type="file" name="photo" accept="image/png, image/jpeg")
             button Add

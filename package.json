@@ -10,10 +10,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.1026.0",
+    "connect-busboy": "^0.0.2",
     "express": "^4.17.1",
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.4",
     "pug": "^3.0.2",
-    "sequelize": "^6.9.0"
+    "sequelize": "^6.9.0",
+    "uuid": "^8.3.2"
   }
 }

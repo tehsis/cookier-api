@@ -13,6 +13,10 @@ app.use(express.urlencoded());
 app.use(express.json());
 app.set('view engine', 'pug');
 
+if (env.NODE_ENV !== "production") {
+    app.use(express.static('imgs'))
+}
+
 app.get('/test', async (req, res) => {
     try {
         await sequelize.authenticate();
@@ -41,9 +45,10 @@ async function init() {
     await assertDBConnection();
 
     await sequelize.sync();
-    
-    app.listen(env.PORT, () => {
-        console.log('Service listening at %d', env.PORT);
+    const port = parseInt(env.PORT, 10);
+    console.log(port);
+    app.listen(port, () => {
+        console.log('Service listening at %d', port);
     });
 }
 

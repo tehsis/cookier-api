@@ -9,3 +9,5 @@ html(lang="en")
         h1= name
         h2 Procedure
         p= procedure
+        each photo in Photos
+            img(src=`${process.env.PHOTO_PATH}${photo.url}`, alt=name)
