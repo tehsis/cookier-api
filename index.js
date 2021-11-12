@@ -1,5 +1,6 @@
 const express = require('express');
-const bodyParser = require('body-parser');
+const https = require('https');
+const fs = require('fs');
 
 const recipeRouter = require('./Routes/recipes');
 const backofficeRouter = require('./Routes/backoffice');
@@ -46,10 +47,15 @@ async function init() {
 
     await sequelize.sync();
     const port = parseInt(env.PORT, 10);
-    console.log(port);
-    app.listen(port, () => {
-        console.log('Service listening at %d', port);
-    });
+
+    const privateKey = fs.readFileSync(env.PRIV_KEY);
+    const publicKey = fs.readFileSync(env.PUB_KEY);
+
+    https.createServer({
+      key: privateKey,
+      cert: publicKey 
+    }, app).listen(port);
+
 }
 
 init();
