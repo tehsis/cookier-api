@@ -5,15 +5,15 @@ const express = require('express');
 const busboy = require('connect-busboy');
 const { v4 } = require('uuid');
 const aws = require('aws-sdk');
+const _ = require('lodash');
 
 const sequelize = require('../Data');
-const { route } = require('./recipes');
 const { env } = require('process');
 
 const router = express.Router();
 
 
-const {Recipe, Photo} = sequelize.models;
+const {Recipe, Photo, Ingredient} = sequelize.models;
 
 
 aws.config.update({region: env.AWS_REGION})
@@ -27,7 +27,8 @@ router.get('/recipes', async (req, res) => {
 });
 
 router.get('/add-recipe', async(req, res) => {
-    res.render('recipes/create');
+    const ingredients = await Ingredient.findAll();
+    res.render('recipes/create', {ingredients});
 });
 
 router.post('/add-recipe', async (req, res) => {
@@ -38,7 +39,7 @@ router.post('/add-recipe', async (req, res) => {
     })
 
     req.busboy.on('field', (name, value) => {
-        newRecipe[name] = value;
+        _.set(newRecipe, name, value);
     });
 
     let photo;
@@ -92,8 +93,20 @@ router.post('/add-recipe', async (req, res) => {
     async function createAssociation() {
         console.log('Creating photo association');
         if (recipe && photo) {
-            recipe.setPhotos([photo]);
+            await recipe.setPhotos([photo]);
             console.log('saving photo');
+            try {
+                for (const ingredient of newRecipe.ingredient) {
+                    await recipe.addIngredient(ingredient.id, {
+                        through: {
+                            unit: ingredient.unit,
+                            quantity: ingredient.quantity
+                        }
+                    });
+                }
+            } catch (e) {
+                console.log(e);
+            }
             try {
                 await recipe.save();
             } catch (e) { 
@@ -109,15 +122,30 @@ router.post('/add-recipe', async (req, res) => {
 router.get('/recipes/:id', async (req, res) => {
     const {id} = req.params;
     const recipe = await Recipe.findByPk(id, {
-        include: Photo
+        include: [Photo, Ingredient]
     });
 
     if (recipe != null) {
-        const {name, procedure, Photos} = recipe;
-        return res.render('recipes/recipe', {name, procedure, Photos});
+        const {name, procedure, Photos, Ingredients} = recipe;
+        return res.render('recipes/recipe', {name, procedure, Photos, Ingredients, title: name});
     }
 
     res.sendStatus(404);
+});
+
+router.get('/add-ingredient', (req, res) => {
+    res.render('ingredients/add-ingredient');
+});
+
+router.post('/add-ingredient', async (req, res) => {
+    const { name } = req.body;
+    await Ingredient.create({ name });
+    res.redirect('/backoffice/ingredients');
+});
+
+router.get('/ingredients', async (req, res) => {
+    const ingredients = await Ingredient.findAll();
+    res.render('ingredients/ingredients', { ingredients });
 });
 
 module.exports = router;

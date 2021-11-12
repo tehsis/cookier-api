@@ -4,7 +4,7 @@ const sequelize = require('../Data');
 
 const router = express.Router();
 
-const {Recipe} = sequelize.models;
+const {Recipe, Ingredient, Photo} = sequelize.models;
 
 router.use((req, res, next) => {
     res.setHeader("Content-Type", "application/json");
@@ -14,7 +14,9 @@ router.use((req, res, next) => {
 
 
 router.get('/', async (req, res) => {
-    const recipes = await Recipe.findAll();
+    const recipes = await Recipe.findAll({
+        include: [Ingredient, Photo]
+    });
 
     res.send(recipes);
 });

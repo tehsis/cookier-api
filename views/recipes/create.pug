@@ -1,17 +1,28 @@
-doctype html
-html(lang="en")
-    head
-        meta(charset="UTF-8")
-        meta(http-equiv="X-UA-Compatible", content="IE=edge")
-        meta(name="viewport", content="width=device-width, initial-scale=1.0")
-        title Document
-    body 
-        h1 Add Recipe 
-        form(action="/backoffice/add-recipe", method="POST", enctype="multipart/form-data")
-            label(for="name") Name
-            input(type="text", name="name")  
-            label(for="procedure") Procedure
-            textarea(name="procedure", cols="30", rows="10")
-            label(for="photo") Photo
-            input(type="file" name="photo" accept="image/png, image/jpeg")
-            button Add
+extends ../layout
+
+block content
+  h1 Add Recipe 
+  form(action="/backoffice/add-recipe", method="POST", enctype="multipart/form-data")
+      label(for="name") Name
+      input(type="text", name="name")  
+      label(for="procedure") Procedure
+      textarea(name="procedure", cols="30", rows="10")
+      label(for="photo") Photo
+      input(type="file" name="photo" accept="image/jpeg")
+      fieldset(title="Ingredients")
+          label(for="ingredient[0].id") Ingredient
+          select(name="ingredient[0].id")
+              option(value="") Select Ingredient
+              each ingredient in ingredients 
+                  option(value=ingredient.id) #{ingredient.name} 
+          div(class="ingredients")
+            div(class="new-ingredient")
+              label(for="ingredient[0].quantity") Quantity
+              input(type="text", name="ingredient[0].quantity")
+              label(for="ingredient[0].unit") Unit
+              input(type="text", name="ingredient[0].unit")
+          button(type="button", name="add-ingredient") Add Another
+      button Add
+
+block scripts
+  script(src="/js/create-recipe.js") 

@@ -13,7 +13,7 @@
             ],
             "env": {
                 "PORT": "3000",
-                "DB": "postgres://postgres:development@localhost:54521/postgres",
+                "DB": "postgres://postgres:development@localhost:5432/postgres",
                 "PHOTO_PATH": "http://localhost:3000/",
                 "AWS_ACCESS_KEY_ID": "",
                 "AWS_SECRET_ACCESS_KEY": "",

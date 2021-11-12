@@ -18,6 +18,8 @@ if (env.NODE_ENV !== "production") {
     app.use(express.static('imgs'))
 }
 
+app.use(express.static('public'));
+
 app.get('/test', async (req, res) => {
     try {
         await sequelize.authenticate();
